@@ -46,7 +46,7 @@ public class JacobiSymbol {
 
 
 
-  import java.math.BigInteger;
+import java.math.BigInteger;
 import java.util.Scanner;
 
 public class MillerRabin {
@@ -58,16 +58,6 @@ public class MillerRabin {
 
         // Using BigInteger's built-in isProbablePrime() method
         System.out.println(n + (n.isProbablePrime(20) ? " is probably prime." : " is composite."));
-        sc.close();
-    }
-}
-
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Enter a number to check: ");
-        int n = sc.nextInt();
-
-        System.out.println(n + (millerRabin(n) ? " is probably prime." : " is composite."));
         sc.close();
     }
 }
