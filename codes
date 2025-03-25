@@ -210,28 +210,26 @@ public class PointAddition {
         System.out.print("Enter y2: ");
         BigInteger y2 = sc.nextBigInteger();
 
-        BigInteger lambda;
-        
-        if (x1.equals(x2) && y1.equals(y2)) {
-            // Point Doubling: λ = (3*x1^2) / (2*y1) mod p
-            BigInteger numerator = x1.pow(2).multiply(BigInteger.valueOf(3)).mod(p);
-            BigInteger denominator = y1.multiply(BigInteger.valueOf(2)).modInverse(p);
-            lambda = numerator.multiply(denominator).mod(p);
+        // Check if points are distinct
+        if (x1.equals(x2)) {
+            System.out.println("Points are not suitable for addition (x1 cannot be equal to x2 in point addition).");
         } else {
             // Point Addition: λ = (y2 - y1) / (x2 - x1) mod p
             BigInteger numerator = y2.subtract(y1).mod(p);
             BigInteger denominator = x2.subtract(x1).mod(p).modInverse(p);
-            lambda = numerator.multiply(denominator).mod(p);
+            BigInteger lambda = numerator.multiply(denominator).mod(p);
+
+            // Calculate resulting point (x3, y3)
+            BigInteger x3 = lambda.pow(2).subtract(x1).subtract(x2).mod(p);
+            BigInteger y3 = lambda.multiply(x1.subtract(x3)).subtract(y1).mod(p);
+
+            System.out.println("Resulting Point (x3, y3): (" + x3 + ", " + y3 + ")");
         }
-
-        // Calculate resulting point (x3, y3)
-        BigInteger x3 = lambda.pow(2).subtract(x1).subtract(x2).mod(p);
-        BigInteger y3 = lambda.multiply(x1.subtract(x3)).subtract(y1).mod(p);
-
-        System.out.println("Resulting Point (x3, y3): (" + x3 + ", " + y3 + ")");
+        
         sc.close();
     }
 }
+
 
 
 
