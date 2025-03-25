@@ -1,0 +1,433 @@
+
+import java.util.Scanner;
+
+public class JacobiSymbol {
+
+    public static int jacobi(int a, int p) {
+        a %= p;
+        int result = 1;
+
+        while (a != 0) {
+            while (a % 2 == 0) {
+                a /= 2;
+                if (p % 8 == 3 || p % 8 == 5) {
+                    result = -result;
+                }
+            }
+            int temp = a;
+            a = p;
+            p = temp;
+
+            if (a % 4 == 3 && p % 4 == 3) {
+                result = -result;
+            }
+            a %= p;
+        }
+
+        return (p == 1) ? result : 0;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter a: ");
+        int a = scanner.nextInt();
+        
+        System.out.print("Enter p (odd number): ");
+        int p = scanner.nextInt();
+
+        System.out.println("Jacobi Symbol (" + a + "/" + p + ") = " + jacobi(a, p));
+        
+        scanner.close();
+    }
+}
+
+
+
+
+
+  import java.math.BigInteger;
+import java.util.Scanner;
+
+public class MillerRabin {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter a number to check: ");
+        BigInteger n = sc.nextBigInteger();
+
+        // Using BigInteger's built-in isProbablePrime() method
+        System.out.println(n + (n.isProbablePrime(20) ? " is probably prime." : " is composite."));
+        sc.close();
+    }
+}
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter a number to check: ");
+        int n = sc.nextInt();
+
+        System.out.println(n + (millerRabin(n) ? " is probably prime." : " is composite."));
+        sc.close();
+    }
+}
+
+
+
+
+
+
+import java.math.BigInteger;
+import java.util.Scanner;
+
+public class SimpleRabinCrypto {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Input values
+        System.out.print("Enter plain text (as number): ");
+        BigInteger m = sc.nextBigInteger();
+        System.out.print("Enter prime number p: ");
+        BigInteger p = sc.nextBigInteger();
+        System.out.print("Enter prime number q: ");
+        BigInteger q = sc.nextBigInteger();
+
+        BigInteger n = p.multiply(q);
+        BigInteger c = m.multiply(m).mod(n);
+        System.out.println("Cipher Text: " + c);
+
+        // Calculate square roots modulo p and q
+        BigInteger mp = c.modPow(p.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), p);
+        BigInteger mq = c.modPow(q.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), q);
+
+        // Calculate using Chinese Remainder Theorem
+        BigInteger yp = p.modInverse(q);
+        BigInteger yq = q.modInverse(p);
+
+        BigInteger r1 = (yp.multiply(p).multiply(mq).add(yq.multiply(q).multiply(mp))).mod(n);
+        BigInteger r2 = n.subtract(r1);
+        BigInteger s1 = (yp.multiply(p).multiply(mq.negate()).add(yq.multiply(q).multiply(mp))).mod(n);
+        BigInteger s2 = n.subtract(s1);
+
+        System.out.println("Possible Plain Texts: " + r1.mod(n) + ", " + r2.mod(n) + ", " + s1.mod(n) + ", " + s2.mod(n));
+        sc.close();
+    }
+}
+
+
+
+
+
+
+ import java.math.BigInteger;
+import java.util.Scanner;
+
+public class ElGamalCrypto {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Input values
+        System.out.println("Enter prime (p), private key (d), random (r), and message (m < p): ");
+        BigInteger p = sc.nextBigInteger();
+        BigInteger d = sc.nextBigInteger();
+        BigInteger r = sc.nextBigInteger();
+        BigInteger m = sc.nextBigInteger();
+
+        BigInteger g = BigInteger.valueOf(2); // Generator
+        BigInteger e1 = g;
+        BigInteger e2 = g.modPow(d, p); // Public key
+
+        // Encryption
+        BigInteger c1 = e1.modPow(r, p);
+        BigInteger c2 = m.multiply(e2.modPow(r, p)).mod(p);
+        System.out.println("Cipher Text: (" + c1 + ", " + c2 + ")");
+
+        // Decryption
+        BigInteger k = c1.modPow(d, p);
+        BigInteger kInv = k.modInverse(p); // Using BigInteger's inbuilt inverse
+        BigInteger decryptedMessage = c2.multiply(kInv).mod(p);
+        System.out.println("Decrypted Message: " + decryptedMessage);
+
+        sc.close();
+    }
+}
+
+
+
+
+
+
+import java.math.BigInteger;
+import java.util.Scanner;
+
+public class DiffieHellman {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Inputs: Prime number (p) and generator (g)
+        System.out.print("Enter prime number (p): ");
+        BigInteger p = sc.nextBigInteger();
+        System.out.print("Enter generator (g): ");
+        BigInteger g = sc.nextBigInteger();
+
+        // Private keys chosen by Alice and Bob
+        System.out.print("Enter Alice's private key (a): ");
+        BigInteger a = sc.nextBigInteger();
+        System.out.print("Enter Bob's private key (b): ");
+        BigInteger b = sc.nextBigInteger();
+
+        // Calculate public keys
+        BigInteger A = g.modPow(a, p);
+        BigInteger B = g.modPow(b, p);
+        System.out.println("Alice's Public Key: " + A);
+        System.out.println("Bob's Public Key: " + B);
+
+        // Calculate shared secret keys
+        BigInteger aliceSecret = B.modPow(a, p);
+        BigInteger bobSecret = A.modPow(b, p);
+
+        System.out.println("Alice's Shared Secret: " + aliceSecret);
+        System.out.println("Bob's Shared Secret: " + bobSecret);
+
+        sc.close();
+    }
+}
+
+
+
+
+
+import java.math.BigInteger;
+import java.util.Scanner;
+
+public class PointAddition {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Input elliptic curve parameters and points
+        System.out.print("Enter prime number (p): ");
+        BigInteger p = sc.nextBigInteger();
+        System.out.print("Enter x1: ");
+        BigInteger x1 = sc.nextBigInteger();
+        System.out.print("Enter y1: ");
+        BigInteger y1 = sc.nextBigInteger();
+        System.out.print("Enter x2: ");
+        BigInteger x2 = sc.nextBigInteger();
+        System.out.print("Enter y2: ");
+        BigInteger y2 = sc.nextBigInteger();
+
+        BigInteger lambda;
+        
+        if (x1.equals(x2) && y1.equals(y2)) {
+            // Point Doubling: λ = (3*x1^2) / (2*y1) mod p
+            BigInteger numerator = x1.pow(2).multiply(BigInteger.valueOf(3)).mod(p);
+            BigInteger denominator = y1.multiply(BigInteger.valueOf(2)).modInverse(p);
+            lambda = numerator.multiply(denominator).mod(p);
+        } else {
+            // Point Addition: λ = (y2 - y1) / (x2 - x1) mod p
+            BigInteger numerator = y2.subtract(y1).mod(p);
+            BigInteger denominator = x2.subtract(x1).mod(p).modInverse(p);
+            lambda = numerator.multiply(denominator).mod(p);
+        }
+
+        // Calculate resulting point (x3, y3)
+        BigInteger x3 = lambda.pow(2).subtract(x1).subtract(x2).mod(p);
+        BigInteger y3 = lambda.multiply(x1.subtract(x3)).subtract(y1).mod(p);
+
+        System.out.println("Resulting Point (x3, y3): (" + x3 + ", " + y3 + ")");
+        sc.close();
+    }
+}
+
+
+
+
+
+
+
+import java.math.BigInteger;
+import java.util.Scanner;
+
+public class PointDoubling {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Input elliptic curve parameters and point
+        System.out.print("Enter prime number (p): ");
+        BigInteger p = sc.nextBigInteger();
+        System.out.print("Enter coefficient a of curve (y^2 = x^3 + ax + b): ");
+        BigInteger a = sc.nextBigInteger();
+        System.out.print("Enter x1: ");
+        BigInteger x1 = sc.nextBigInteger();
+        System.out.print("Enter y1: ");
+        BigInteger y1 = sc.nextBigInteger();
+
+        // Check if y1 = 0 (Point at infinity)
+        if (y1.equals(BigInteger.ZERO)) {
+            System.out.println("Point Doubling Result: Point at Infinity");
+            return;
+        }
+
+        // Calculate λ using the Point Doubling formula
+        BigInteger numerator = (x1.pow(2).multiply(BigInteger.valueOf(3)).add(a)).mod(p);
+        BigInteger denominator = y1.multiply(BigInteger.valueOf(2)).modInverse(p);
+        BigInteger lambda = numerator.multiply(denominator).mod(p);
+
+        // Calculate resulting point (x3, y3)
+        BigInteger x3 = (lambda.pow(2).subtract(x1.multiply(BigInteger.valueOf(2))).add(p)).mod(p);
+        BigInteger y3 = (lambda.multiply(x1.subtract(x3)).subtract(y1).add(p)).mod(p);
+
+        System.out.println("Resulting Point (x3, y3): (" + x3 + ", " + y3 + ")");
+        sc.close();
+    }
+}
+
+
+
+
+
+
+
+
+import java.math.BigInteger;
+import java.util.Scanner;
+
+public class ECCEncryptionDecryptionBigInt {
+
+    // Calculate modular inverse using BigInteger
+    static BigInteger modInverse(BigInteger a, BigInteger p) {
+        return a.modInverse(p);
+    }
+
+    // Perform point addition on the elliptic curve
+    static BigInteger[] pointAddition(BigInteger x1, BigInteger y1, BigInteger x2, BigInteger y2, BigInteger a, BigInteger p) {
+        BigInteger lambda;
+        if (x1.equals(x2) && y1.equals(y2)) { // Point doubling
+            BigInteger numerator = x1.pow(2).multiply(BigInteger.valueOf(3)).add(a).mod(p);
+            BigInteger denominator = modInverse(y1.multiply(BigInteger.valueOf(2)), p);
+            lambda = numerator.multiply(denominator).mod(p);
+        } else { // Point addition
+            BigInteger numerator = y2.subtract(y1).mod(p);
+            BigInteger denominator = modInverse(x2.subtract(x1).mod(p), p);
+            lambda = numerator.multiply(denominator).mod(p);
+        }
+
+        BigInteger x3 = lambda.pow(2).subtract(x1).subtract(x2).mod(p);
+        BigInteger y3 = lambda.multiply(x1.subtract(x3)).subtract(y1).mod(p);
+
+        return new BigInteger[]{x3, y3};
+    }
+
+    // Perform scalar multiplication using point addition
+    static BigInteger[] scalarMultiply(BigInteger x, BigInteger y, BigInteger k, BigInteger a, BigInteger p) {
+        BigInteger[] result = {x, y};
+        for (BigInteger i = BigInteger.ONE; i.compareTo(k) < 0; i = i.add(BigInteger.ONE)) {
+            result = pointAddition(result[0], result[1], x, y, a, p);
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter prime number (p): ");
+        BigInteger p = sc.nextBigInteger();
+        System.out.print("Enter coefficient a: ");
+        BigInteger a = sc.nextBigInteger();
+        System.out.print("Enter coefficient b: ");
+        BigInteger b = sc.nextBigInteger();
+
+        System.out.print("Enter message point (x, y): ");
+        BigInteger x = sc.nextBigInteger();
+        BigInteger y = sc.nextBigInteger();
+
+        System.out.print("Enter random number (k): ");
+        BigInteger k = sc.nextBigInteger();
+
+        System.out.print("Enter private key (d): ");
+        BigInteger d = sc.nextBigInteger();
+
+        // Calculate public key
+        BigInteger[] basePoint = {x, y};
+        BigInteger[] publicKey = scalarMultiply(basePoint[0], basePoint[1], d, a, p);
+
+        // Encryption
+        BigInteger[] kG = scalarMultiply(basePoint[0], basePoint[1], k, a, p);
+        BigInteger[] kP = scalarMultiply(publicKey[0], publicKey[1], k, a, p);
+        BigInteger[] c1 = kG;
+        BigInteger[] c2 = pointAddition(x, y, kP[0], kP[1], a, p);
+
+        System.out.println("Ciphertext C1: (" + c1[0] + ", " + c1[1] + ")");
+        System.out.println("Ciphertext C2: (" + c2[0] + ", " + c2[1] + ")");
+
+        // Decryption
+        BigInteger[] dC1 = scalarMultiply(c1[0], c1[1], d, a, p);
+        dC1[1] = p.subtract(dC1[1]).mod(p); // Invert y-coordinate
+        BigInteger[] decryptedMessage = pointAddition(c2[0], c2[1], dC1[0], dC1[1], a, p);
+
+        System.out.println("Decrypted Message: (" + decryptedMessage[0] + ", " + decryptedMessage[1] + ")");
+
+        sc.close();
+    }
+}
+
+
+
+
+
+import java.util.Scanner;
+
+public class SimpleRSA {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Input two small prime numbers
+        System.out.print("Enter first small prime (p): ");
+        int p = scanner.nextInt();
+        
+        System.out.print("Enter second small prime (q): ");
+        int q = scanner.nextInt();
+
+        int n = p * q;
+        int phi = (p - 1) * (q - 1);
+
+        // Input public key e (small and co-prime with phi)
+        System.out.print("Enter public key (e): ");
+        int e = scanner.nextInt();
+        
+        // Calculate private key d using basic formula
+        int d = 1;
+        while ((d * e) % phi != 1) {
+            d++;
+        }
+
+        System.out.println("Public Key: (" + e + ", " + n + ")");
+        System.out.println("Private Key: (" + d + ", " + n + ")");
+
+        // Encryption
+        System.out.print("Enter message (as small number): ");
+        int message = scanner.nextInt();
+        int encrypted = 1;
+        for (int i = 0; i < e; i++) {
+            encrypted = (encrypted * message) % n;
+        }
+        System.out.println("Encrypted: " + encrypted);
+
+        // Decryption
+        int decrypted = 1;
+        for (int i = 0; i < d; i++) {
+            decrypted = (decrypted * encrypted) % n;
+        }
+        System.out.println("Decrypted: " + decrypted);
+
+        scanner.close();
+    }
+}
+
+
