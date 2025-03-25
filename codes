@@ -190,38 +190,42 @@ public class DiffieHellman {
 
 
 
-import java.math.BigInteger;
 import java.util.Scanner;
+import java.math.BigInteger;
 
 public class PointAddition {
+
+    public static int modInverse(int a, int p) {
+        return BigInteger.valueOf(a).modInverse(BigInteger.valueOf(p)).intValue();
+    }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
         // Input elliptic curve parameters and points
         System.out.print("Enter prime number (p): ");
-        BigInteger p = sc.nextBigInteger();
+        int p = sc.nextInt();
         System.out.print("Enter x1: ");
-        BigInteger x1 = sc.nextBigInteger();
+        int x1 = sc.nextInt();
         System.out.print("Enter y1: ");
-        BigInteger y1 = sc.nextBigInteger();
+        int y1 = sc.nextInt();
         System.out.print("Enter x2: ");
-        BigInteger x2 = sc.nextBigInteger();
+        int x2 = sc.nextInt();
         System.out.print("Enter y2: ");
-        BigInteger y2 = sc.nextBigInteger();
+        int y2 = sc.nextInt();
 
         // Check if points are distinct
-        if (x1.equals(x2)) {
+        if (x1 == x2) {
             System.out.println("Points are not suitable for addition (x1 cannot be equal to x2 in point addition).");
         } else {
             // Point Addition: λ = (y2 - y1) / (x2 - x1) mod p
-            BigInteger numerator = y2.subtract(y1).mod(p);
-            BigInteger denominator = x2.subtract(x1).mod(p).modInverse(p);
-            BigInteger lambda = numerator.multiply(denominator).mod(p);
+            int numerator = (y2 - y1 + p) % p;
+            int denominator = modInverse((x2 - x1 + p) % p, p);
+            int lambda = (numerator * denominator) % p;
 
             // Calculate resulting point (x3, y3)
-            BigInteger x3 = lambda.pow(2).subtract(x1).subtract(x2).mod(p);
-            BigInteger y3 = lambda.multiply(x1.subtract(x3)).subtract(y1).mod(p);
+            int x3 = (lambda * lambda - x1 - x2 + p) % p;
+            int y3 = (lambda * (x1 - x3) - y1 + p) % p;
 
             System.out.println("Resulting Point (x3, y3): (" + x3 + ", " + y3 + ")");
         }
@@ -237,38 +241,43 @@ public class PointAddition {
 
 
 
-import java.math.BigInteger;
+
 import java.util.Scanner;
+import java.math.BigInteger;
 
 public class PointDoubling {
+
+    public static int modInverse(int a, int p) {
+        return BigInteger.valueOf(a).modInverse(BigInteger.valueOf(p)).intValue();
+    }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
         // Input elliptic curve parameters and point
         System.out.print("Enter prime number (p): ");
-        BigInteger p = sc.nextBigInteger();
+        int p = sc.nextInt();
         System.out.print("Enter coefficient a of curve (y^2 = x^3 + ax + b): ");
-        BigInteger a = sc.nextBigInteger();
+        int a = sc.nextInt();
         System.out.print("Enter x1: ");
-        BigInteger x1 = sc.nextBigInteger();
+        int x1 = sc.nextInt();
         System.out.print("Enter y1: ");
-        BigInteger y1 = sc.nextBigInteger();
+        int y1 = sc.nextInt();
 
         // Check if y1 = 0 (Point at infinity)
-        if (y1.equals(BigInteger.ZERO)) {
+        if (y1 == 0) {
             System.out.println("Point Doubling Result: Point at Infinity");
             return;
         }
 
         // Calculate λ using the Point Doubling formula
-        BigInteger numerator = (x1.pow(2).multiply(BigInteger.valueOf(3)).add(a)).mod(p);
-        BigInteger denominator = y1.multiply(BigInteger.valueOf(2)).modInverse(p);
-        BigInteger lambda = numerator.multiply(denominator).mod(p);
+        int numerator = (3 * x1 * x1 + a) % p;
+        int denominator = modInverse(2 * y1, p);
+        int lambda = (numerator * denominator) % p;
 
         // Calculate resulting point (x3, y3)
-        BigInteger x3 = (lambda.pow(2).subtract(x1.multiply(BigInteger.valueOf(2))).add(p)).mod(p);
-        BigInteger y3 = (lambda.multiply(x1.subtract(x3)).subtract(y1).add(p)).mod(p);
+        int x3 = (lambda * lambda - 2 * x1 + p) % p;
+        int y3 = (lambda * (x1 - x3) - y1 + p) % p;
 
         System.out.println("Resulting Point (x3, y3): (" + x3 + ", " + y3 + ")");
         sc.close();
@@ -280,89 +289,92 @@ public class PointDoubling {
 
 
 
-
-
-import java.math.BigInteger;
 import java.util.Scanner;
+import java.math.BigInteger;
 
-public class ECCEncryptionDecryptionBigInt {
+public class UserInputECC {
 
-    // Calculate modular inverse using BigInteger
-    static BigInteger modInverse(BigInteger a, BigInteger p) {
-        return a.modInverse(p);
-    }
+    static int a, p;
+    static int[] G = new int[2];
 
-    // Perform point addition on the elliptic curve
-    static BigInteger[] pointAddition(BigInteger x1, BigInteger y1, BigInteger x2, BigInteger y2, BigInteger a, BigInteger p) {
-        BigInteger lambda;
-        if (x1.equals(x2) && y1.equals(y2)) { // Point doubling
-            BigInteger numerator = x1.pow(2).multiply(BigInteger.valueOf(3)).add(a).mod(p);
-            BigInteger denominator = modInverse(y1.multiply(BigInteger.valueOf(2)), p);
-            lambda = numerator.multiply(denominator).mod(p);
-        } else { // Point addition
-            BigInteger numerator = y2.subtract(y1).mod(p);
-            BigInteger denominator = modInverse(x2.subtract(x1).mod(p), p);
-            lambda = numerator.multiply(denominator).mod(p);
+    public static int[] addPoints(int[] P, int[] Q) {
+        if (P[0] == Q[0] && P[1] == Q[1]) {
+            int lambda = ((3 * P[0] * P[0] + a) * modInverse(2 * P[1], p)) % p;
+            if (lambda < 0) lambda += p;
+            
+            int x3 = (lambda * lambda - P[0] - Q[0]) % p;
+            int y3 = (lambda * (P[0] - x3) - P[1]) % p;
+            return new int[]{(x3 + p) % p, (y3 + p) % p};
+        } else {
+            int lambda = ((Q[1] - P[1]) * modInverse(Q[0] - P[0], p)) % p;
+            if (lambda < 0) lambda += p;
+            
+            int x3 = (lambda * lambda - P[0] - Q[0]) % p;
+            int y3 = (lambda * (P[0] - x3) - P[1]) % p;
+            return new int[]{(x3 + p) % p, (y3 + p) % p};
         }
-
-        BigInteger x3 = lambda.pow(2).subtract(x1).subtract(x2).mod(p);
-        BigInteger y3 = lambda.multiply(x1.subtract(x3)).subtract(y1).mod(p);
-
-        return new BigInteger[]{x3, y3};
     }
 
-    // Perform scalar multiplication using point addition
-    static BigInteger[] scalarMultiply(BigInteger x, BigInteger y, BigInteger k, BigInteger a, BigInteger p) {
-        BigInteger[] result = {x, y};
-        for (BigInteger i = BigInteger.ONE; i.compareTo(k) < 0; i = i.add(BigInteger.ONE)) {
-            result = pointAddition(result[0], result[1], x, y, a, p);
+    public static int[] scalarMultiply(int[] P, int k) {
+        int[] result = P;
+        for (int i = 1; i < k; i++) {
+            result = addPoints(result, P);
         }
         return result;
     }
 
+    public static int modInverse(int a, int p) {
+        return BigInteger.valueOf(a).modInverse(BigInteger.valueOf(p)).intValue();
+    }
+
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter prime number (p): ");
-        BigInteger p = sc.nextBigInteger();
+        // Curve Parameters
         System.out.print("Enter coefficient a: ");
-        BigInteger a = sc.nextBigInteger();
-        System.out.print("Enter coefficient b: ");
-        BigInteger b = sc.nextBigInteger();
+        a = scanner.nextInt();
+        
+        System.out.print("Enter prime number p: ");
+        p = scanner.nextInt();
 
-        System.out.print("Enter message point (x, y): ");
-        BigInteger x = sc.nextBigInteger();
-        BigInteger y = sc.nextBigInteger();
+        System.out.print("Enter base point G (x, y): ");
+        G[0] = scanner.nextInt();
+        G[1] = scanner.nextInt();
 
-        System.out.print("Enter random number (k): ");
-        BigInteger k = sc.nextBigInteger();
-
-        System.out.print("Enter private key (d): ");
-        BigInteger d = sc.nextBigInteger();
-
-        // Calculate public key
-        BigInteger[] basePoint = {x, y};
-        BigInteger[] publicKey = scalarMultiply(basePoint[0], basePoint[1], d, a, p);
+        // Private and Public Key Generation
+        System.out.print("Enter private key (kA): ");
+        int kA = scanner.nextInt();
+        int[] publicKey = scalarMultiply(G, kA);
+        System.out.println("Public Key: (" + publicKey[0] + ", " + publicKey[1] + ")");
 
         // Encryption
-        BigInteger[] kG = scalarMultiply(basePoint[0], basePoint[1], k, a, p);
-        BigInteger[] kP = scalarMultiply(publicKey[0], publicKey[1], k, a, p);
-        BigInteger[] c1 = kG;
-        BigInteger[] c2 = pointAddition(x, y, kP[0], kP[1], a, p);
+        System.out.print("Enter plain text point (x, y): ");
+        int[] plainText = new int[2];
+        plainText[0] = scanner.nextInt();
+        plainText[1] = scanner.nextInt();
 
-        System.out.println("Ciphertext C1: (" + c1[0] + ", " + c1[1] + ")");
-        System.out.println("Ciphertext C2: (" + c2[0] + ", " + c2[1] + ")");
+        System.out.print("Enter random number (kB): ");
+        int kB = scanner.nextInt();
+        int[] kB_G = scalarMultiply(G, kB);
+        int[] kB_publicKey = scalarMultiply(publicKey, kB);
+
+        int cipher1 = kB_G[0];
+        int cipher2X = (plainText[0] + kB_publicKey[0]) % p;
+        int cipher2Y = (plainText[1] + kB_publicKey[1]) % p;
+
+        System.out.println("Encrypted: ((" + cipher1 + ", " + kB_G[1] + "), (" + cipher2X + ", " + cipher2Y + "))");
 
         // Decryption
-        BigInteger[] dC1 = scalarMultiply(c1[0], c1[1], d, a, p);
-        dC1[1] = p.subtract(dC1[1]).mod(p); // Invert y-coordinate
-        BigInteger[] decryptedMessage = pointAddition(c2[0], c2[1], dC1[0], dC1[1], a, p);
+        int[] kA_kB_G = scalarMultiply(kB_G, kA);
+        int decryptedX = (cipher2X - kA_kB_G[0] + p) % p;
+        int decryptedY = (cipher2Y - kA_kB_G[1] + p) % p;
 
-        System.out.println("Decrypted Message: (" + decryptedMessage[0] + ", " + decryptedMessage[1] + ")");
-
-        sc.close();
+        System.out.println("Decrypted: (" + decryptedX + ", " + decryptedY + ")");
+        scanner.close();
     }
 }
+
+
 
 
 
