@@ -380,55 +380,35 @@ public class UserInputECC {
 
 
 
+import java.math.BigInteger;
 import java.util.Scanner;
 
-public class SimpleRSA {
-
+public class EasyRSA {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
 
-        // Input two small prime numbers
-        System.out.print("Enter first small prime (p): ");
-        int p = scanner.nextInt();
-        
-        System.out.print("Enter second small prime (q): ");
-        int q = scanner.nextInt();
+        BigInteger p = sc.nextBigInteger();  // small prime
+        BigInteger q = sc.nextBigInteger();  // small prime
+        BigInteger e = sc.nextBigInteger();  // public key
+        BigInteger message = sc.nextBigInteger(); // message
 
-        int n = p * q;
-        int phi = (p - 1) * (q - 1);
-
-        // Input public key e (small and co-prime with phi)
-        System.out.print("Enter public key (e): ");
-        int e = scanner.nextInt();
-        
-        // Calculate private key d using basic formula
-        int d = 1;
-        while ((d * e) % phi != 1) {
-            d++;
-        }
+        BigInteger n = p.multiply(q);
+        BigInteger phi = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
+        BigInteger d = e.modInverse(phi);  // private key
 
         System.out.println("Public Key: (" + e + ", " + n + ")");
         System.out.println("Private Key: (" + d + ", " + n + ")");
 
-        // Encryption
-        System.out.print("Enter message (as small number): ");
-        int message = scanner.nextInt();
-        int encrypted = 1;
-        for (int i = 0; i < e; i++) {
-            encrypted = (encrypted * message) % n;
-        }
+        BigInteger encrypted = message.modPow(e, n);
         System.out.println("Encrypted: " + encrypted);
 
-        // Decryption
-        int decrypted = 1;
-        for (int i = 0; i < d; i++) {
-            decrypted = (decrypted * encrypted) % n;
-        }
+        BigInteger decrypted = encrypted.modPow(d, n);
         System.out.println("Decrypted: " + decrypted);
 
-        scanner.close();
+        sc.close();
     }
 }
+
 
 
 import java.util.Scanner;
