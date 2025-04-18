@@ -536,29 +536,31 @@ public class ElGamalSignature {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         
-         System.out.println("Enter prime q, primitive root g, private key x, random k, and hash h:");
-         
-        BigInteger q = sc.nextBigInteger();  // prime
+        System.out.println("Enter prime p, primitive root g, private key x, random r, and hash h:");
+
+        BigInteger p = sc.nextBigInteger();  // prime
         BigInteger g = sc.nextBigInteger();  // primitive root
         BigInteger x = sc.nextBigInteger();  // private key
-        BigInteger k = sc.nextBigInteger();  // random (gcd(k, q-1) = 1)
-        BigInteger h = sc.nextBigInteger();  // hash
+        BigInteger r = sc.nextBigInteger();  // random number (gcd(r, p-1) = 1)
+        BigInteger h = sc.nextBigInteger();  // hash of the message
 
-        BigInteger y = g.modPow(x, q);       // public key
-        BigInteger s1 = g.modPow(k, q);       // signature part 1
-        BigInteger kInv = k.modInverse(q.subtract(BigInteger.ONE));
-        BigInteger s2 = h.subtract(x.multiply(s1)).multiply(kInv).mod(q.subtract(BigInteger.ONE));
+        BigInteger y = g.modPow(x, p);       // public key
+        BigInteger s1 = g.modPow(r, p);      // signature part 1
+        BigInteger rInv = r.modInverse(p.subtract(BigInteger.ONE));
+        BigInteger s2 = h.subtract(x.multiply(s1)).multiply(rInv).mod(p.subtract(BigInteger.ONE));
 
         System.out.println("Signature: s1 = " + s1 + ", s2 = " + s2);
 
-        BigInteger v1 = y.modPow(s1, q).multiply(s1.modPow(s2, q)).mod(q);
-        BigInteger v2 = g.modPow(h, q);
+        BigInteger v1 = y.modPow(s1, p).multiply(s1.modPow(s2, p)).mod(p);
+        BigInteger v2 = g.modPow(h, p);
 
         System.out.println(v1.equals(v2) ? "VALID" : "INVALID");
 
         sc.close();
     }
 }
+
+
 
 
 
