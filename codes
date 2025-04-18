@@ -88,19 +88,19 @@ public class SimpleRabinCrypto {
         System.out.println("Cipher Text: " + c);
 
         // Calculate square roots modulo p and q
-        BigInteger mp = c.modPow(p.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), p);
-        BigInteger mq = c.modPow(q.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), q);
+        BigInteger a1 = c.modPow(p.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), p);
+        BigInteger b1 = c.modPow(q.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), q);
 
         // Calculate using Chinese Remainder Theorem
-        BigInteger yp = p.modInverse(q);
-        BigInteger yq = q.modInverse(p);
+        BigInteger zp = p.modInverse(q);
+        BigInteger zq = q.modInverse(p);
 
-        BigInteger r1 = (yp.multiply(p).multiply(mq).add(yq.multiply(q).multiply(mp))).mod(n);
-        BigInteger r2 = n.subtract(r1);
-        BigInteger s1 = (yp.multiply(p).multiply(mq.negate()).add(yq.multiply(q).multiply(mp))).mod(n);
-        BigInteger s2 = n.subtract(s1);
+        BigInteger m1 = (zp.multiply(p).multiply(b1).add(zq.multiply(q).multiply(a1))).mod(n);
+        BigInteger m2 = n.subtract(m1);
+        BigInteger m3 = (zq.multiply(p).multiply(b1.negate()).add(zq.multiply(q).multiply(a1))).mod(n);
+        BigInteger m4 = n.subtract(m3);
 
-        System.out.println("Possible Plain Texts: " + r1.mod(n) + ", " + r2.mod(n) + ", " + s1.mod(n) + ", " + s2.mod(n));
+        System.out.println("Possible Plain Texts: " + m1.mod(n) + ", " + m2.mod(n) + ", " + m3.mod(n) + ", " + m4.mod(n));
         sc.close();
     }
 }
