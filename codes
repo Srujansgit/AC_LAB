@@ -547,3 +547,66 @@ public class BasicAlgorithmsMenu {
 }
 
 
+
+
+import java.math.BigInteger;
+import java.util.Scanner;
+
+public class ElGamalSignature {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        
+         System.out.println("Enter prime q, primitive root g, private key x, random k, and hash h:");
+         
+        BigInteger q = sc.nextBigInteger();  // prime
+        BigInteger g = sc.nextBigInteger();  // primitive root
+        BigInteger x = sc.nextBigInteger();  // private key
+        BigInteger k = sc.nextBigInteger();  // random (gcd(k, q-1) = 1)
+        BigInteger h = sc.nextBigInteger();  // hash
+
+        BigInteger y = g.modPow(x, q);       // public key
+        BigInteger s1 = g.modPow(k, q);       // signature part 1
+        BigInteger kInv = k.modInverse(q.subtract(BigInteger.ONE));
+        BigInteger s2 = h.subtract(x.multiply(s1)).multiply(kInv).mod(q.subtract(BigInteger.ONE));
+
+        System.out.println("Signature: s1 = " + s1 + ", s2 = " + s2);
+
+        BigInteger v1 = y.modPow(s1, q).multiply(s1.modPow(s2, q)).mod(q);
+        BigInteger v2 = g.modPow(h, q);
+
+        System.out.println(v1.equals(v2) ? "VALID" : "INVALID");
+
+        sc.close();
+    }
+}
+
+
+
+import java.math.BigInteger;
+import java.util.Scanner;
+
+public class RSASignature {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        
+        System.out.println("Enter prime q and q, encryption key e and hash h:");
+        BigInteger p = sc.nextBigInteger();  // first prime
+        BigInteger q = sc.nextBigInteger();  // second prime
+        BigInteger e = sc.nextBigInteger();  // public exponent
+        BigInteger h = sc.nextBigInteger();  // hash of the message
+
+        BigInteger n = p.multiply(q);                      // n = p * q
+        BigInteger phi = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
+        BigInteger d = e.modInverse(phi);                  // private key
+
+        BigInteger s = h.modPow(d, n);                     // signature: s = h^d mod n
+        System.out.println("Signature: " + s);
+
+        BigInteger v = s.modPow(e, n);                     // verification: v = s^e mod n
+        System.out.println(v.equals(h) ? "VALID" : "INVALID");
+
+        sc.close();
+    }
+}
+
+
