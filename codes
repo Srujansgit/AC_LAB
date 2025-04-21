@@ -600,31 +600,26 @@ public class EasyECC {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        // Input
         System.out.println("Enter prime p, base G, private key d, random r, and hash h:");
         BigInteger p = sc.nextBigInteger();
         BigInteger G = sc.nextBigInteger();
         BigInteger d = sc.nextBigInteger();
-        BigInteger r = sc.nextBigInteger(); 
+        BigInteger r = sc.nextBigInteger();
         BigInteger h = sc.nextBigInteger();
 
-        // Public key
         BigInteger Q = G.multiply(d).mod(p);
-
-        // Signature
-        BigInteger k = G.multiply(r).mod(p); 
+        BigInteger sigR = G.multiply(r).mod(p);
         BigInteger rinv = r.modInverse(p);
-        BigInteger s = (h.add(d.multiply(k))).multiply(rinv).mod(p);
+        BigInteger s = (h.add(d.multiply(sigR))).multiply(rinv).mod(p);
 
-        System.out.println("Signature: k = " + k + ", s = " + s);
+        System.out.println("Signature: r = " + sigR + ", s = " + s);
 
-        // Verification
         BigInteger w = s.modInverse(p);
         BigInteger u1 = h.multiply(w).mod(p);
-        BigInteger u2 = k.multiply(w).mod(p);
+        BigInteger u2 = sigR.multiply(w).mod(p);
         BigInteger v = (G.multiply(u1).add(Q.multiply(u2))).mod(p);
 
-        System.out.println(v.equals(k) ? "VALID" : "INVALID");
+        System.out.println(v.equals(sigR) ? "VALID" : "INVALID");
     }
 }
 
