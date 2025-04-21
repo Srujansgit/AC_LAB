@@ -616,7 +616,7 @@ public class EasyECC {
         BigInteger rinv = r.modInverse(p);
         BigInteger s = (h.add(d.multiply(k))).multiply(rinv).mod(p);
 
-        System.out.println("Signature: r = " + k + ", s = " + s);
+        System.out.println("Signature: k = " + k + ", s = " + s);
 
         // Verification
         BigInteger w = s.modInverse(p);
