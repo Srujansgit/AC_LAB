@@ -536,18 +536,18 @@ public class ElGamalSignature {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         
-        System.out.println("Enter prime p, primitive root g, private key x, random r, and hash h:");
+        System.out.println("Enter prime p, primitive root g, private key d, random r, and hash h:");
 
         BigInteger p = sc.nextBigInteger();  // prime
         BigInteger g = sc.nextBigInteger();  // primitive root
-        BigInteger x = sc.nextBigInteger();  // private key
+        BigInteger d = sc.nextBigInteger();  // private key
         BigInteger r = sc.nextBigInteger();  // random number (gcd(r, p-1) = 1)
         BigInteger h = sc.nextBigInteger();  // hash of the message
 
-        BigInteger y = g.modPow(x, p);       // public key
+        BigInteger y = g.modPow(d, p);       // public key
         BigInteger s1 = g.modPow(r, p);      // signature part 1
         BigInteger rInv = r.modInverse(p.subtract(BigInteger.ONE));
-        BigInteger s2 = h.subtract(x.multiply(s1)).multiply(rInv).mod(p.subtract(BigInteger.ONE));
+        BigInteger s2 = h.subtract(d.multiply(s1)).multiply(rInv).mod(p.subtract(BigInteger.ONE));
 
         System.out.println("Signature: s1 = " + s1 + ", s2 = " + s2);
 
@@ -601,30 +601,30 @@ public class EasyECC {
         Scanner sc = new Scanner(System.in);
 
         // Input
-        System.out.println("Enter prime p, base G, private key d, random k, and hash h:");
+        System.out.println("Enter prime p, base G, private key d, random r, and hash h:");
         BigInteger p = sc.nextBigInteger();
         BigInteger G = sc.nextBigInteger();
         BigInteger d = sc.nextBigInteger();
-        BigInteger k = sc.nextBigInteger();
+        BigInteger r = sc.nextBigInteger(); 
         BigInteger h = sc.nextBigInteger();
 
         // Public key
         BigInteger Q = G.multiply(d).mod(p);
 
         // Signature
-        BigInteger r = G.multiply(k).mod(p);
-        BigInteger kinv = k.modInverse(p);
-        BigInteger s = (h.add(d.multiply(r))).multiply(kinv).mod(p);
+        BigInteger k = G.multiply(r).mod(p); 
+        BigInteger rinv = r.modInverse(p);
+        BigInteger s = (h.add(d.multiply(k))).multiply(rinv).mod(p);
 
-        System.out.println("Signature: r = " + r + ", s = " + s);
+        System.out.println("Signature: r = " + k + ", s = " + s);
 
         // Verification
         BigInteger w = s.modInverse(p);
         BigInteger u1 = h.multiply(w).mod(p);
-        BigInteger u2 = r.multiply(w).mod(p);
+        BigInteger u2 = k.multiply(w).mod(p);
         BigInteger v = (G.multiply(u1).add(Q.multiply(u2))).mod(p);
 
-        System.out.println(v.equals(r) ? "VALID" : "INVALID");
+        System.out.println(v.equals(k) ? "VALID" : "INVALID");
     }
 }
 
