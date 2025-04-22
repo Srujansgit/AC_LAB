@@ -46,20 +46,66 @@ public class JacobiSymbol {
 
 
 
-import java.math.BigInteger;
 import java.util.Scanner;
 
-public class MillerRabin {
+class primalitytest {
 
-    public static void main(String[] args) {
+
+    public static void main(String args[]) {
+        System.out.println("Enter the number you want to test");
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter a number to check: ");
-        BigInteger n = sc.nextBigInteger();
+        int n = sc.nextInt();
 
-        // Using BigInteger's built-in isProbablePrime() method
-        System.out.println(n + (n.isProbablePrime(20) ? " is probably prime." : " is composite."));
-        sc.close();
-    }
+        // If the number is 2 or 3, it is prime
+        if (n == 2 || n == 3) {
+            System.out.println("The number given is prime");
+            return;
+        }
+        // If the number is less than or equal to 1, it's not prime
+        else if (n <= 1) {
+            System.out.println("Given number is not prime");
+            return;
+        }
+        // If the number is even, it's not prime
+        else if (n % 2 == 0) {
+            System.out.println("Given number is not prime");
+            return;
+        }
+
+        // Now we need to calculate the value of k and m
+        int m = n - 1;
+        int k = 0;
+        // Find m and k such that n-1 = 2^k * m (with m odd)
+        while (m % 2 == 0) {
+            k++;
+            m /= 2;
+        }
+
+        // Testing with base a
+        int a = 2; // In a more advanced test, you would choose random a values
+        a = (int) Math.pow(a, m) % n; // Compute a^m % n
+
+        // Loop through k times
+        for (int i = 0; i < k; i++) {
+            // If a^2^i % n == 1, then n is composite
+            if (a == 1) {
+                System.out.println("Given number is composite");
+                return;
+            }
+            // If a^2^i % n == n-1, then n is prime
+            else if (a == n - 1) {
+                System.out.println("Given number is prime");
+                return;
+            } else {
+                // a becomes a^2 % n for the next iteration
+                a = (int) Math.pow(a, 2) % n;
+            }
+        }
+
+        // If none of the conditions matched, it's composite
+        System.out.println("Given number is composite");
+}
+    
 }
 
 
