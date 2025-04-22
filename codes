@@ -607,19 +607,18 @@ public class EasyECC {
         BigInteger r = sc.nextBigInteger();
         BigInteger h = sc.nextBigInteger();
 
-        BigInteger Q = G.multiply(d).mod(p);
-        BigInteger sigR = G.multiply(r).mod(p);
+        BigInteger y = G.multiply(d).mod(p);          // public key
+        BigInteger s1 = G.multiply(r).mod(p);         // r component of signature
         BigInteger rinv = r.modInverse(p);
-        BigInteger s = (h.add(d.multiply(sigR))).multiply(rinv).mod(p);
+        BigInteger s2 = (h.add(d.multiply(s1))).multiply(rinv).mod(p); // s component of signature
 
-        System.out.println("Signature: r = " + sigR + ", s = " + s);
+        System.out.println("Signature: s1 = " + s1 + ", s = " + s2);
 
-        BigInteger w = s.modInverse(p);
+        BigInteger w = s2.modInverse(p);
         BigInteger u1 = h.multiply(w).mod(p);
-        BigInteger u2 = sigR.multiply(w).mod(p);
-        BigInteger v = (G.multiply(u1).add(Q.multiply(u2))).mod(p);
+        BigInteger u2 = s1.multiply(w).mod(p);
+        BigInteger v = (G.multiply(u1).add(y.multiply(u2))).mod(p);
 
-        System.out.println(v.equals(sigR) ? "VALID" : "INVALID");
+        System.out.println(v.equals(s1) ? "VALID" : "INVALID");
     }
 }
-
