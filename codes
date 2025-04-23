@@ -232,6 +232,8 @@ public class DiffieHellman {
     }
 }
 
+
+
 import java.math.BigInteger;
 import java.util.Scanner;
 
@@ -247,17 +249,19 @@ public class SimplePaillierBasic {
         BigInteger q = sc.nextBigInteger();
         System.out.println("Enter message (m):");
         BigInteger m = sc.nextBigInteger();
+        System.out.println("Enter lambda (lcm(p-1, q-1)):");
+        BigInteger lambda = sc.nextBigInteger();
 
         // Key Generation
         BigInteger n = p.multiply(q);
         BigInteger nsquare = n.multiply(n);
         BigInteger g = n.add(BigInteger.ONE); // g = n + 1 (common choice)
 
-        BigInteger lambda = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
+        // Corrected mu calculation
         BigInteger mu = (g.modPow(lambda, nsquare).subtract(BigInteger.ONE)).divide(n).modInverse(n);
 
         // Encryption
-        BigInteger r = new BigInteger("3"); // Use small r for simplicity (should be random & coprime with n)
+        BigInteger r = new BigInteger("3"); // For demo only, should be random and gcd(r, n) = 1
         BigInteger c = (g.modPow(m, nsquare).multiply(r.modPow(n, nsquare))).mod(nsquare);
         System.out.println("Encrypted message: " + c);
 
@@ -269,6 +273,8 @@ public class SimplePaillierBasic {
         sc.close();
     }
 }
+
+
 
 
 
