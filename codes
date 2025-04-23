@@ -232,7 +232,43 @@ public class DiffieHellman {
     }
 }
 
+import java.math.BigInteger;
+import java.util.Scanner;
 
+public class SimplePaillierBasic {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Input two prime numbers and message
+        System.out.println("Enter prime p:");
+        BigInteger p = sc.nextBigInteger();
+        System.out.println("Enter prime q:");
+        BigInteger q = sc.nextBigInteger();
+        System.out.println("Enter message (m):");
+        BigInteger m = sc.nextBigInteger();
+
+        // Key Generation
+        BigInteger n = p.multiply(q);
+        BigInteger nsquare = n.multiply(n);
+        BigInteger g = n.add(BigInteger.ONE); // g = n + 1 (common choice)
+
+        BigInteger lambda = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
+        BigInteger mu = (g.modPow(lambda, nsquare).subtract(BigInteger.ONE)).divide(n).modInverse(n);
+
+        // Encryption
+        BigInteger r = new BigInteger("3"); // Use small r for simplicity (should be random & coprime with n)
+        BigInteger c = (g.modPow(m, nsquare).multiply(r.modPow(n, nsquare))).mod(nsquare);
+        System.out.println("Encrypted message: " + c);
+
+        // Decryption
+        BigInteger u = (c.modPow(lambda, nsquare).subtract(BigInteger.ONE)).divide(n);
+        BigInteger decrypted = u.multiply(mu).mod(n);
+        System.out.println("Decrypted message: " + decrypted);
+
+        sc.close();
+    }
+}
 
 
 
